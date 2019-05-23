@@ -8,6 +8,5 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  motores.setM1Speed(200);
-  motores.setM2Speed(-200);
+  motores.setM2Speed(-50);
 }

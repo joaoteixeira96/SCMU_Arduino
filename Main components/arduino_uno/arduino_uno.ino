@@ -6,10 +6,10 @@ DRV8835MotorShield motores;
 
 //Pin for photoresistor
 const int sensorPin=5;
-int lightLevel, high=0,low=1023;
+int lightLevel;
 
 //Pin for motionSensor
-int motionSensorPin = 7;
+int motionSensorPin = 5;
 
 //Piezo
 int sensorReading = 0;
@@ -56,17 +56,17 @@ void loop() {
     delay(20000);
   }
   else if(response == "LightOn"){
-       openLights();
-       pressureDetector();
-       delay(20000);       
+     openLights();
+     pressureDetector();
+     delay(20000);       
   } else if(response =="BlindsOn" ){
-       openBlinds();
-       pressureDetector();
-       delay(20000);
+     openBlinds();
+     pressureDetector();
+     delay(20000);
   } else if(response == "allOff"){
     pressureDetector();
        delay(20000);
-  }
+  } else return;
 }
 
 void manualTune()
@@ -85,13 +85,12 @@ void openBlinds()
      manualTune();
      Serial.println(lightLevel);
      if(lightLevel >200){
-      digitalWrite(LED_BUILTIN, HIGH); // FOR TEST : simulates its a motor
-      motores.setM1Speed(200);
-      motores.setM2Speed(-200);
+      //digitalWrite(LED_BUILTIN, HIGH); // FOR TEST : simulates its a motor
+      motores.setM2Speed(-50);
       delay(6000);
-      motores.setM1Speed(0);
       motores.setM2Speed(0);
-      digitalWrite(LED_BUILTIN, LOW);
+ 
+      //digitalWrite(LED_BUILTIN, LOW);
      }  
 }
 void openLightsAndBlinds()
@@ -105,7 +104,8 @@ void pressureDetector()
   sensorReading = analogRead(knockSensor);
   Serial.println(sensorReading);
   // if the sensor reading is greater than the threshold:
-  if (sensorReading >= threshold /*&& motionDetect()*/) {
+  motionDetect();
+  if (sensorReading >= threshold && motionDetect()) {
     Serial.println("Knock!");
     arduino.write("Knock!");
     return ;
@@ -115,6 +115,7 @@ void pressureDetector()
 }
 boolean motionDetect()
 {
+  
    return digitalRead(motionSensorPin) > 0;
   
 }

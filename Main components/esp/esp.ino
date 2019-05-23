@@ -10,11 +10,11 @@ WiFiUDP Udp;
 unsigned int localUdpPort = 37020;
 char incomingPacket[256];
 char replyPacket[] = "{'msgType': 'triggerAlarm', 'user' : 'ze'}";
+
 //TEST : CHANGE VALUES BACK TO ""
 String incomingUser="ze";
 String incomingUserLights="false";
 String incomingUserBlinds="true";
-
 
 void setup()
 {
@@ -26,12 +26,10 @@ void setup()
   esp.begin(9600);
 }
 void loop(){
+// TODO dar reset aos valores user lights e blinds
 //Serial.write("Hello from ESP");
-//delay(2000);  
+//delay(2000); 
 int packetSize = Udp.parsePacket(); 
-
-
- 
 if (packetSize)
 {
   Serial.printf("Received %d bytes from %s, port %d\n", packetSize, Udp.remoteIP().toString().c_str(), Udp.remotePort());
@@ -61,23 +59,14 @@ if (packetSize)
     Serial.println(incomingUserBlinds);
     Serial.println("End of response");
 
-  
+    // Send request for Arduino
     sendRequestToArduino();
-  
 
-}
-    //FOR TESTING
-    sendRequestToArduino();
- 
+    //Wait until user pressures the piezo and triggers and Knock! message
+    while(!(esp.readString()=="Knock!")){}
+
     // send back a reply, to the IP address and port we got the packet from
-    while(!(esp.readString()=="Knock!")){
-      
-    }
-    //TESTING
-    Serial.println("triggerAlarm");
-    Serial.println("ze");
-    
-/*    Serial.println(Udp.remoteIP());
+    Serial.println(Udp.remoteIP());
     Serial.println(Udp.remotePort());
     StaticJsonBuffer<200> jsonBufferEncode;
     JsonObject& root2 = jsonBuffer.createObject();
@@ -92,7 +81,20 @@ if (packetSize)
       return;  
     }
     client.print(answer);
-*/
+
+}
+   
+    //FOR TESTING
+    sendRequestToArduino();
+ 
+    // send back a reply, to the IP address and port we got the packet from
+    while(!(esp.readString()=="Knock!")){
+      
+    }
+    //FOR TESTING
+    Serial.println("triggerAlarm");
+    Serial.println("ze");
+  
 }
 void sendRequestToArduino()
 {
