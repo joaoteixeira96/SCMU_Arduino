@@ -12,9 +12,9 @@ char incomingPacket[256];
 char replyPacket[] = "{'msgType': 'triggerAlarm', 'user' : 'ze'}";
 
 //TEST : CHANGE VALUES BACK TO ""
-String incomingUser="ze";
-String incomingUserLights="false";
-String incomingUserBlinds="true";
+String incomingUser="";
+String incomingUserLights="";
+String incomingUserBlinds="";
 
 void setup()
 {
@@ -29,6 +29,9 @@ void loop(){
 // TODO dar reset aos valores user lights e blinds
 //Serial.write("Hello from ESP");
 //delay(2000); 
+incomingUser="";
+incomingUserLights="";
+incomingUserBlinds="";
 int packetSize = Udp.parsePacket(); 
 if (packetSize)
 {
@@ -60,6 +63,7 @@ if (packetSize)
     Serial.println("End of response");
 
     // Send request for Arduino
+    delay(1000);
     sendRequestToArduino();
 
     //Wait until user pressures the piezo and triggers and Knock! message
@@ -85,7 +89,7 @@ if (packetSize)
 }
    
     //FOR TESTING
-    sendRequestToArduino();
+/*    sendRequestToArduino();
  
     // send back a reply, to the IP address and port we got the packet from
     while(!(esp.readString()=="Knock!")){
@@ -94,7 +98,7 @@ if (packetSize)
     //FOR TESTING
     Serial.println("triggerAlarm");
     Serial.println("ze");
-  
+ */ 
 }
 void sendRequestToArduino()
 {

@@ -86,7 +86,7 @@ void openBlinds()
      Serial.println(lightLevel);
      if(lightLevel >200){
       //digitalWrite(LED_BUILTIN, HIGH); // FOR TEST : simulates its a motor
-      motores.setM2Speed(-50);
+      motores.setM2Speed(-100);
       delay(6000);
       motores.setM2Speed(0);
  
