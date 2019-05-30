@@ -27,8 +27,6 @@ void setup()
 }
 void loop(){
 // TODO dar reset aos valores user lights e blinds
-//Serial.write("Hello from ESP");
-//delay(2000); 
 incomingUser="";
 incomingUserLights="";
 incomingUserBlinds="";
@@ -75,8 +73,8 @@ if (packetSize)
     StaticJsonBuffer<200> jsonBufferEncode;
     JsonObject& root2 = jsonBuffer.createObject();
     root2["msgType"] = "triggerAlarm";
-    root2["user"] = "ze";
-    String answer;
+    root2["user"] = incomingUser;
+    String answer ="";
     root2.printTo(answer);
 
     WiFiClient client;
@@ -88,17 +86,16 @@ if (packetSize)
 
 }
    
-    //FOR TESTING
-/*    sendRequestToArduino();
+/*    //FOR TESTING
+    sendRequestToArduino();
  
     // send back a reply, to the IP address and port we got the packet from
     while(!(esp.readString()=="Knock!")){
-      
     }
     //FOR TESTING
     Serial.println("triggerAlarm");
     Serial.println("ze");
- */ 
+ */    
 }
 void sendRequestToArduino()
 {
@@ -107,13 +104,25 @@ void sendRequestToArduino()
         {
           esp.write("allOn");
           delay(4000);
+          while(esp.readString()=="Repeat"){
+          esp.write("allOn");
+          delay(4000);
+          }
         } 
         else if(incomingUserLights=="true"){
           esp.write("LightOn");
-          delay(4000);    
+          delay(4000);
+          while(esp.readString()=="Repeat"){
+          esp.write("LightOn");
+          delay(4000);
+          }
         }else if(incomingUserBlinds == "true"){
           esp.write("BlindsOn");
-          delay(4000);                
+          delay(4000);
+          while(esp.readString()=="Repeat"){
+          esp.write("LightOn");
+          delay(4000);
+          }
         }else if(incomingUserLights == "false" && incomingUserBlinds == "false"){
           esp.write("allOff");
           delay(4000);

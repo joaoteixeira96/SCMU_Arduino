@@ -1,5 +1,7 @@
 #include <SoftwareSerial.h>
 #include <DRV8835MotorShield.h>
+//reset arduino
+int Reset = 7;
 
 // DC motor
 DRV8835MotorShield motores;
@@ -15,12 +17,16 @@ int motionSensorPin = 5;
 int sensorReading = 0;
 const int knockSensor = A0; // the piezo is connected to analog pin 0
 const int threshold = 200;  // threshold value to decide when the detected sound is a knock or not 
+const String allOn= "allOn";
+const String LightOn= "LightOn";
+const String BlindsOn ="BlindsOn";
+const String allOff = "allOff";
 
-String response="";
+String response;
 // software serial #1: RX = digital pin 0, TX = digital pin 2
 SoftwareSerial arduino(2, 3);
-boolean motorStarted = false;
 void setup() {
+  response ="";
   // Open serial communications and wait for port to open:
   Serial.begin(9600);
   while (!Serial) {
@@ -37,35 +43,35 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  motorStarted = false;
+  response ="";
   if (arduino.available()) {
     //Serial.write(esp.read());
     response = arduino.readString();
     Serial.println(response);
   }
-
-  /*if (Serial.available()) {
-    esp.write(Serial.read());
-    response = esp.readString();
-    Serial.println(response);
-  }*/
-  if(response == "allOn")
+  if(!(response =="" ||response == allOn ||response == LightOn  || response == BlindsOn || response == allOff) ){
+    arduino.write("Repeat");
+    delay(4000);
+    Serial.println("Trash message please resend");
+  }
+  
+  if(response == allOn)
   {
     openLightsAndBlinds();
     pressureDetector();
     delay(20000);
   }
-  else if(response == "LightOn"){
+  else if(response == LightOn){
      openLights();
      pressureDetector();
      delay(20000);       
-  } else if(response =="BlindsOn" ){
+  } else if(response ==BlindsOn ){
      openBlinds();
      pressureDetector();
      delay(20000);
-  } else if(response == "allOff"){
+  } else if(response == allOff){
     pressureDetector();
-       delay(20000);
+      delay(20000);
   } else return;
 }
 
@@ -83,14 +89,12 @@ void openBlinds()
 {
      lightLevel = analogRead(sensorPin);
      manualTune();
-     Serial.println(lightLevel);
-     if(lightLevel >200){
+     Serial.println("LightLevel    :"+lightLevel);
+     if(lightLevel >150){
       //digitalWrite(LED_BUILTIN, HIGH); // FOR TEST : simulates its a motor
       motores.setM2Speed(-100);
       delay(6000);
       motores.setM2Speed(0);
- 
-      //digitalWrite(LED_BUILTIN, LOW);
      }  
 }
 void openLightsAndBlinds()
